@@ -1,7 +1,7 @@
 {
   "name": "source-loader",
   "description": "Webpack loader that exports the source directly",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "author": "static-dev",
   "ava": {
     "verbose": "true"
