@@ -24,3 +24,23 @@ test.cb('basic text content works correctly', (t) => {
     t.end()
   })
 })
+
+test.cb('raw source is added to loader context', (t) => {
+  webpack({
+    context: fixturesPath,
+    entry: path.join(fixturesPath, 'basic'),
+    output: { path: fixturesPath, filename: 'build.js' },
+    resolveLoader: {
+      alias: { source: path.join(__dirname, '../lib/index.js') }
+    },
+    module: { loaders: [{ test: /\.txt$/, loader: 'source' }] }
+  }, (err, res) => {
+    if (err) { t.fail(err) }
+    const mod = res.compilation.modules.find((m) => {
+      return m.rawRequest === './hello.txt'
+    })
+    t.truthy(Buffer.isBuffer(mod._src))
+    t.is(String(mod._src).trim(), 'hello there!')
+    t.end()
+  })
+})
