@@ -44,3 +44,23 @@ test.cb('raw source is added to loader context', (t) => {
     t.end()
   })
 })
+
+test.cb('binary files not exported but are made availble for plugins', (t) => {
+  const outputPath = path.join(fixturesPath, 'build-bin.js')
+
+  webpack({
+    context: fixturesPath,
+    entry: path.join(fixturesPath, 'binary'),
+    output: { path: fixturesPath, filename: 'build-bin.js' },
+    resolveLoader: {
+      alias: { source: path.join(__dirname, '../lib/index.js') }
+    },
+    module: { loaders: [{ test: /\.gif$/, loader: 'source' }] }
+  }, (err, res) => {
+    if (err) { t.fail(err) }
+    const src = fs.readFileSync(outputPath, 'utf8')
+    t.truthy(src.match(/module\.exports = "binary"/))
+    fs.unlinkSync(outputPath)
+    t.end()
+  })
+})
