@@ -8,10 +8,10 @@
   },
   "bugs": "https://github.com/static-dev/source-loader/issues",
   "devDependencies": {
-    "ava": "^0.15.2",
+    "ava": "^0.16.0",
     "coveralls": "2.x",
-    "nyc": "6.x",
-    "standard": "7.x",
+    "nyc": "8.1.0",
+    "standard": "8.0.0",
     "webpack": "^1.13.0"
   },
   "engines": {
