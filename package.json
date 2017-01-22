@@ -28,6 +28,6 @@
     "coveralls": "nyc --reporter=lcov ava && cat ./coverage/lcov.info | coveralls"
   },
   "dependencies": {
-    "is-binary-path": "^1.0.1"
+    "is-binary-path": "^2.0.0"
   }
 }
