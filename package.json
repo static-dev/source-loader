@@ -12,7 +12,7 @@
     "coveralls": "2.x",
     "nyc": "10.1.2",
     "standard": "8.6.0",
-    "webpack": "^1.13.0"
+    "webpack": "^2.2.1"
   },
   "engines": {
     "node": ">= 6.0.0"
