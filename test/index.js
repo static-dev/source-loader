@@ -14,7 +14,7 @@ test.cb('basic text content works correctly', (t) => {
     resolveLoader: {
       alias: { source: path.join(__dirname, '../lib/index.js') }
     },
-    module: { loaders: [{ test: /\.txt$/, loader: 'source' }] }
+    module: { rules: [{ test: /\.txt$/, loader: 'source' }] }
   }, (err, res) => {
     if (err) { t.fail(err) }
     t.truthy(res.compilation.errors.length < 1)
@@ -33,7 +33,7 @@ test.cb('raw source is added to loader context', (t) => {
     resolveLoader: {
       alias: { source: path.join(__dirname, '../lib/index.js') }
     },
-    module: { loaders: [{ test: /\.txt$/, loader: 'source' }] }
+    module: { rules: [{ test: /\.txt$/, loader: 'source' }] }
   }, (err, res) => {
     if (err) { t.fail(err) }
     const mod = res.compilation.modules.find((m) => {
@@ -55,11 +55,39 @@ test.cb('binary files not exported but are made availble for plugins', (t) => {
     resolveLoader: {
       alias: { source: path.join(__dirname, '../lib/index.js') }
     },
-    module: { loaders: [{ test: /\.gif$/, loader: 'source' }] }
+    module: { rules: [{ test: /\.gif$/, loader: 'source' }] }
   }, (err, res) => {
     if (err) { t.fail(err) }
     const src = fs.readFileSync(outputPath, 'utf8')
     t.truthy(src.match(/module\.exports = "binary"/))
+    fs.unlinkSync(outputPath)
+    t.end()
+  })
+})
+
+test.cb('valid js source parsed by setting the _jsSource prop', (t) => {
+  const outputPath = path.join(fixturesPath, 'build-js.js')
+  webpack({
+    context: fixturesPath,
+    entry: path.join(fixturesPath, 'javascript'),
+    output: { path: fixturesPath, filename: 'build-js.js' },
+    resolveLoader: {
+      alias: {
+        source: path.join(__dirname, '../lib/index.js'),
+        rawJs: path.join(__dirname, './fixtures/raw_js_mod.js')
+      }
+    },
+    module: {
+      rules: [{
+        test: /\.txt$/,
+        use: [{ loader: 'source' }, { loader: 'rawJs' }]
+      }]
+    }
+  }, (err, res) => {
+    if (err) { t.fail(err) }
+    t.truthy(res.compilation.errors.length < 1)
+    const src = fs.readFileSync(outputPath, 'utf8')
+    t.regex(src, /module\.exports = { look: 'this is actually valid js!' }/)
     fs.unlinkSync(outputPath)
     t.end()
   })
