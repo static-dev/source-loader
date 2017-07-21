@@ -22,7 +22,7 @@ Just load it up in your webpack config like this:
 module.exports = {
   module: {
     loaders: [
-      { test: /\.foo$/, loader: 'source' }
+      { test: /\.foo$/, loader: 'source-loader' }
     ]
   }
 }
@@ -39,7 +39,9 @@ As an added bonus, this loader makes the buffered raw source available on the `l
 
 Let's break down how this could be done. Inside any plugin hook, you have a `compilation` object. You can get the `loaderContext` for any of the modules that webpack is processing through `compilation.modules` -- just find the one(s) you want by name. Now you have a large object which is an instance of the `DependenciesBlock` class, with a bunch of great information on it. You can find the raw buffered source under the `_src` property if the file was loaded with the source-loader.
 
-Wondering what sets this loader apart from [raw-loader](https://github.com/webpack/raw-loader)? This is it. Both loaders expose the file's contents to be required by webpack, but this loader also exposes the raw source for plugin processing. It also does not try to stringify binary files (which can cause bugs), has tests, and is actively maintained, as a bonus.
+Additionally, if you have a specific source that is valid javascript and you'd like this loader not to output it as a string that would need to be eval'd in order to use the javascript, there's a hack for that. Within a plugin or another loader, if you add `_jsSource` as a truthy property to the module, it will skip the extra stringification and output the source raw. Note that you will get an error if it's not valid javascript, so make sure you are only setting the `_jsSource` property if you are positive that what is coming out of your loader chain is going to be js. To set from a loader, `this._module._jsSource = true` will do it, and from a plugin, you can do the same as is described above with the `_src` property.
+
+Wondering what sets this loader apart from [raw-loader](https://github.com/webpack/raw-loader)? This is it. Both loaders expose the file's contents to be required by webpack, but this loader also exposes the raw source for plugin processing, and allows raw js to be passed through conditionally. It also does not try to stringify binary files (which can cause bugs), has tests, and is actively maintained, as a bonus.
 
 ### License & Contributing
 
